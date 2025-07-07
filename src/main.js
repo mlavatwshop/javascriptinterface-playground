@@ -63,19 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <div>
-          <label for="receiptHeader">Receipt Header:</label>
-          <input type="text" id="receiptHeader" value="Hesperide Boutique" placeholder="Receipt header...">
-          
-          <label for="receiptContent">Receipt Content:</label>
-          <textarea id="receiptContent" placeholder="Receipt content...">Thank you for your purchase!
-
-Item 1: $10.00
-Item 2: $15.00
---------------
-Total: $25.00</textarea>
-          
-          <label for="receiptFooter">Receipt Footer:</label>
-          <input type="text" id="receiptFooter" value="Please come again!" placeholder="Receipt footer...">
+          <label for="receiptData">Receipt Data (JSON):</label>
+          <textarea id="receiptData" placeholder="Enter receipt data as JSON...">{
+  "header": "Hesperide Boutique",
+  "content": "Thank you for your purchase!\n\nItem 1: $10.00\nItem 2: $15.00\n--------------\nTotal: $25.00",
+  "footer": "Please come again!"
+}</textarea>
           
           <div class="button-group">
             <button class="outline" onclick="printReceiptJS()">Print Receipt (JS)</button>
@@ -236,37 +229,14 @@ Total: $25.00</textarea>
     }
   }
 
-  function printTextJS() {
-    const text = document.getElementById('printText').value;
-    if (!text.trim()) {
-      log('Error: No text to print');
-      return;
-    }
-    
-    log(`Printing text via JavaScript Interface: "${text}"`);
-    
-    try {
-      if (window.PrinterManager && window.PrinterManager.printText) {
-        window.PrinterManager.printText(text);
-        log('Text printed via JavaScript Interface!');
-      } else {
-        log('No printText method available in JavaScript Interface');
-      }
-    } catch (error) {
-      log(`JS Interface print error: ${error.message}`);
-    }
-  }
-
   function printReceiptJS() {
-    const header = document.getElementById('receiptHeader').value;
-    const content = document.getElementById('receiptContent').value;
-    const footer = document.getElementById('receiptFooter').value;
+    const receiptData = document.getElementById('receiptData').value;
     
     log('Printing receipt via JavaScript Interface...');
     
     try {
       if (window.PrinterManager && window.PrinterManager.printReceipt) {
-        window.PrinterManager.printReceipt(header, content, footer);
+        window.PrinterManager.printReceipt(receiptData);
         log('Receipt printed via JavaScript Interface!');
       } else {
         log('No printReceipt method available in JavaScript Interface');
@@ -333,31 +303,8 @@ Total: $25.00</textarea>
     }
   }
 
-  async function printTextAJAX() {
-    const text = document.getElementById('printText').value;
-    if (!text.trim()) {
-      log('Error: No text to print');
-      return;
-    }
-    
-    log(`Printing text via AJAX: "${text}"`);
-    
-    try {
-      const response = await makeRequest('/print/text', 'POST');
-      if (response.data.success) {
-        log('Text printed via AJAX!');
-      } else {
-        log(`AJAX print failed: ${response.data.error}`);
-      }
-    } catch (error) {
-      log(`AJAX print error: ${error.message}`);
-    }
-  }
-
   async function printReceiptAJAX() {
-    const header = document.getElementById('receiptHeader').value;
-    const content = document.getElementById('receiptContent').value;
-    const footer = document.getElementById('receiptFooter').value;
+    const receiptData = document.getElementById('receiptData').value;
     
     log('Printing receipt via AJAX...');
     
@@ -411,14 +358,12 @@ Total: $25.00</textarea>
   window.checkStatusJS = checkStatusJS;
   window.connectPrinterJS = connectPrinterJS;
   window.disconnectPrinterJS = disconnectPrinterJS;
-  window.printTextJS = printTextJS;
   window.printReceiptJS = printReceiptJS;
   window.cutPaperJS = cutPaperJS;
   
   window.checkStatusAJAX = checkStatusAJAX;
   window.connectPrinterAJAX = connectPrinterAJAX;
   window.disconnectPrinterAJAX = disconnectPrinterAJAX;
-  window.printTextAJAX = printTextAJAX;
   window.printReceiptAJAX = printReceiptAJAX;
   window.cutPaperAJAX = cutPaperAJAX;
   
