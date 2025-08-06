@@ -70,10 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <h2>📄 PDF Printing</h2>
       <div>
         <label for="pdfUrl">PDF URL:</label>
-        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="https://www.orimi.com/pdf-test.pdf">
+        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="http://192.168.142.14/other/androidapp/fac.pdf">
         <div class="button-group">
           <button class="outline" onclick="printPDFJS()">Print PDF</button>
-          <button class="outline secondary" onclick="fetchAndConvertPDF()">Fetch & Convert to Base64</button>
         </div>
         <div id="pdfStatus" style="margin-top: 10px;"></div>
       </div>
@@ -221,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // PDF functions
-  async function fetchAndConvertPDF() {
+  function printPDFJS() {
     const pdfUrl = document.getElementById('pdfUrl').value;
     const pdfStatus = document.getElementById('pdfStatus');
     
@@ -231,51 +230,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    log(`Fetching PDF from: ${pdfUrl}`);
-    pdfStatus.innerHTML = '<span>Fetching PDF...</span>';
-
-    try {
-      const response = await fetch(pdfUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-      
-      // Store the base64 data for later use
-      window.currentPDFBase64 = base64;
-      
-      const fileSize = (arrayBuffer.byteLength / 1024).toFixed(2);
-      pdfStatus.innerHTML = `<span class="success">PDF converted to base64 (${fileSize} KB)</span>`;
-      log(`PDF successfully converted to base64 (${fileSize} KB)`);
-      
-    } catch (error) {
-      pdfStatus.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-      log(`PDF fetch error: ${error.message}`);
-    }
-  }
-
-  function printPDFJS() {
-    if (!window.currentPDFBase64) {
-      log('Error: No PDF data available. Please fetch and convert a PDF first.');
-      return;
-    }
-
-    log('Printing PDF via JavaScript Interface...');
+    log(`Sending PDF URL to JavaScript Interface: ${pdfUrl}`);
+    pdfStatus.innerHTML = '<span>Sending PDF URL...</span>';
     
     try {
       if (window.PrinterManager && window.PrinterManager.printPDF) {
-        window.PrinterManager.printPDF(window.currentPDFBase64);
-        log('PDF sent to JavaScript Interface for printing!');
-      } else if (window.PrinterManager && window.PrinterManager.printBase64PDF) {
-        window.PrinterManager.printBase64PDF(window.currentPDFBase64);
-        log('PDF sent to JavaScript Interface for printing!');
+        window.PrinterManager.printPDF(pdfUrl);
+        pdfStatus.innerHTML = '<span class="success">PDF URL sent to JavaScript Interface</span>';
+        log('PDF URL sent to JavaScript Interface for printing!');
+      } else if (window.PrinterManager && window.PrinterManager.printPDFFromURL) {
+        window.PrinterManager.printPDFFromURL(pdfUrl);
+        pdfStatus.innerHTML = '<span class="success">PDF URL sent to JavaScript Interface</span>';
+        log('PDF URL sent to JavaScript Interface for printing!');
       } else {
-        log('No printPDF or printBase64PDF method available in JavaScript Interface');
+        pdfStatus.innerHTML = '<span class="error">No PDF printing method available</span>';
+        log('No printPDF or printPDFFromURL method available in JavaScript Interface');
       }
     } catch (error) {
+      pdfStatus.innerHTML = `<span class="error">Error: ${error.message}</span>`;
       log(`JS Interface PDF print error: ${error.message}`);
     }
   }
@@ -298,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.printTextJS = printTextJS;
   window.printReceiptJS = printReceiptJS;
   window.cutPaperJS = cutPaperJS;
-  window.fetchAndConvertPDF = fetchAndConvertPDF;
   window.printPDFJS = printPDFJS;
   window.clearLog = clearLog;
 
