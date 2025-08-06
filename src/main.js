@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfStatus.innerHTML = '<span>Sending print request...</span>';
     
     try {
-      const response = await fetch('https://localhost:8080/print', {
+      const response = await fetch('http://localhost:8080/print', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
