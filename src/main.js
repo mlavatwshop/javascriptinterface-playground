@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <h2>📄 PDF Printing</h2>
       <div>
         <label for="pdfUrl">PDF URL:</label>
-        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="http://192.168.142.14/other/androidapp/fac.pdf">
+        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="https://www.orimi.com/pdf-test.pdf">
         <div class="button-group">
           <button class="outline" onclick="printPDFJS()">Print PDF</button>
           <button class="outline secondary" onclick="fetchAndConvertPDF()">Fetch & Convert to Base64</button>
