@@ -2,10 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const appElement = document.querySelector('#app');
   
   // Configuration
-  const SERVER_URL = 'http://localhost:8080'; // Change this to your device's IP address
-  let isConnected = false;
   let jsInterfaceAvailable = false;
-  let ajaxAvailable = false;
 
   // Main HTML content
   appElement.innerHTML = `
@@ -17,17 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <article>
       <h2>🔍 Connection Status</h2>
-      <div id="status">Checking connection methods...</div>
-      <div id="status-details" class="grid">
-        <div id="jsinterface-section">
-          <h3>📱 JavaScript Interface</h3>
-          <div id="jsinterface-status">...</div>
-        </div>
-
-        <div id="ajax-section">
-          <h3>🌐 AJAX Server</h3>
-          <div id="ajax-status">...</div>
-        </div>
+      <div id="status">Checking JavaScript Interface...</div>
+      <div id="jsinterface-section">
+        <h3>📱 JavaScript Interface</h3>
+        <div id="jsinterface-status">...</div>
       </div>
     </article>
 
@@ -36,16 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="grid">
         <div>
           <h4>JavaScript Interface</h4>
-          <button class="outline" onclick="connectPrinterJS()" id="connectBtnJS">Connect Printer (JS)</button>
-          <button class="outline secondary" onclick="disconnectPrinterJS()" id="disconnectBtnJS">Disconnect Printer (JS)</button>
-          <button class="outline" onclick="checkStatusJS()">Check Status (JS)</button>
-        </div>
-        
-        <div>
-          <h4>AJAX Server</h4>
-          <button class="outline" onclick="connectPrinterAJAX()" id="connectBtnAJAX">Connect Printer (AJAX)</button>
-          <button class="outline secondary" onclick="disconnectPrinterAJAX()" id="disconnectBtnAJAX">Disconnect Printer (AJAX)</button>
-          <button class="outline" onclick="checkStatusAJAX()">Check Status (AJAX)</button>
+          <button class="outline" onclick="connectPrinterJS()" id="connectBtnJS">Connect Printer</button>
+          <button class="outline secondary" onclick="disconnectPrinterJS()" id="disconnectBtnJS">Disconnect Printer</button>
+          <button class="outline" onclick="checkStatusJS()">Check Status</button>
         </div>
       </div>
     </article>
@@ -57,8 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <label for="printText">Text to Print:</label>
           <textarea id="printText" placeholder="Enter text to print...">Hello from Printer Control Panel! This is a test print.</textarea>
           <div class="button-group">
-            <button class="outline" onclick="printTextJS()">Print Text (JS)</button>
-            <button class="outline" onclick="printTextAJAX()">Print Text (AJAX)</button>
+            <button class="outline" onclick="printTextJS()">Print Text</button>
           </div>
         </div>
         
@@ -66,13 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <label for="receiptData">Receipt Data (JSON):</label>
           <textarea id="receiptData" placeholder="Enter receipt data as JSON...">{
   "header": "Hesperide Boutique",
-  "content": "Thank you for your purchase!\n\nItem 1: $10.00\nItem 2: $15.00\n--------------\nTotal: $25.00",
+  "content": "Thank you for your purchase!\\n\\nItem 1: $10.00\\nItem 2: $15.00\\n--------------\\nTotal: $25.00",
   "footer": "Please come again!"
 }</textarea>
           
           <div class="button-group">
-            <button class="outline" onclick="printReceiptJS()">Print Receipt (JS)</button>
-            <button class="outline" onclick="printReceiptAJAX()">Print Receipt (AJAX)</button>
+            <button class="outline" onclick="printReceiptJS()">Print Receipt</button>
           </div>
         </div>
       </div>
@@ -81,8 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
     <article>
       <h2>✂️ Paper Management</h2>
       <div class="button-group">
-        <button class="outline" onclick="cutPaperJS()">Cut Paper (JS)</button>
-        <button class="outline" onclick="cutPaperAJAX()">Cut Paper (AJAX)</button>
+        <button class="outline" onclick="cutPaperJS()">Cut Paper</button>
+      </div>
+    </article>
+
+    <article>
+      <h2>📄 PDF Printing</h2>
+      <div>
+        <label for="pdfUrl">PDF URL:</label>
+        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="http://192.168.142.14/other/androidapp/fac.pdf">
+        <div class="button-group">
+          <button class="outline" onclick="printPDFJS()">Print PDF</button>
+          <button class="outline secondary" onclick="fetchAndConvertPDF()">Fetch & Convert to Base64</button>
+        </div>
+        <div id="pdfStatus" style="margin-top: 10px;"></div>
       </div>
     </article>
 
@@ -107,79 +100,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateStatus() {
     const statusElement = document.getElementById('status');
-    const connectBtnJS = document.getElementById('connectBtnJS');
-    const disconnectBtnJS = document.getElementById('disconnectBtnJS');
-    const connectBtnAJAX = document.getElementById('connectBtnAJAX');
-    const disconnectBtnAJAX = document.getElementById('disconnectBtnAJAX');
+    const jsInterfaceStatus = document.getElementById('jsinterface-status');
     
-    let statusText = '';
-    if (jsInterfaceAvailable && ajaxAvailable) {
-      statusText = `<span class="success">Both JavaScript Interface and AJAX available</span>`;
-    } else if (jsInterfaceAvailable) {
-      statusText = `<span class="success">JavaScript Interface available</span>`;
-    } else if (ajaxAvailable) {
-      statusText = `<span class="success">AJAX server available</span>`;
+    if (jsInterfaceAvailable) {
+      statusElement.innerHTML = '<span class="success">JavaScript Interface available</span>';
+      jsInterfaceStatus.innerHTML = '<span class="success">✅ Available</span>';
     } else {
-      statusText = `<span class="error">No connection method available</span>`;
+      statusElement.innerHTML = '<span class="error">JavaScript Interface not available</span>';
+      jsInterfaceStatus.innerHTML = '<span class="error">❌ Not available</span>';
     }
-    
-    statusElement.innerHTML = statusText;
-    
-    // Update button states based on availability
-    connectBtnJS.disabled = !jsInterfaceAvailable;
-    disconnectBtnJS.disabled = !jsInterfaceAvailable;
-    connectBtnAJAX.disabled = !ajaxAvailable;
-    disconnectBtnAJAX.disabled = !ajaxAvailable;
   }
 
-  // JavaScript Interface functions
   function checkPrinterManager() {
-    const jsinterfaceStatus = document.getElementById('jsinterface-status');
+    const jsInterfaceStatus = document.getElementById('jsinterface-status');
     
-    if (typeof window.PrinterManager !== 'undefined') {
-      jsinterfaceStatus.innerHTML = '<span class="success">JavaScript Interface detected!</span>';
+    if (window.PrinterManager) {
+      jsInterfaceStatus.innerHTML = '<span class="success">JavaScript Interface detected</span>';
       jsInterfaceAvailable = true;
       log('JavaScript Interface detected and ready');
-      return true;
     } else {
-      jsinterfaceStatus.innerHTML = '<span class="error">JavaScript Interface not detected</span>';
+      jsInterfaceStatus.innerHTML = '<span class="error">JavaScript Interface not detected</span>';
+      jsInterfaceAvailable = false;
       log('JavaScript Interface not detected');
-      return false;
-    }
-  }
-
-  // AJAX functions
-  async function makeRequest(endpoint, method = 'GET') {
-    try {
-      const response = await fetch(`${SERVER_URL}${endpoint}`, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      log(`AJAX Error: ${error.message}`);
-      throw error;
-    }
-  }
-
-  async function checkAJAXServer() {
-    const ajaxStatus = document.getElementById('ajax-status');
-    
-    try {
-      await makeRequest('/status');
-      ajaxStatus.innerHTML = '<span class="success">AJAX server available</span>';
-      ajaxAvailable = true;
-      log('AJAX server detected and ready');
-      return true;
-    } catch (error) {
-      ajaxStatus.innerHTML = '<span class="error">AJAX server not available</span>';
-      log('AJAX server not available');
-      return false;
     }
   }
 
@@ -229,6 +171,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function printTextJS() {
+    const printText = document.getElementById('printText').value;
+    
+    log('Printing text via JavaScript Interface...');
+    
+    try {
+      if (window.PrinterManager && window.PrinterManager.printText) {
+        window.PrinterManager.printText(printText);
+        log('Text printed via JavaScript Interface!');
+      } else {
+        log('No printText method available in JavaScript Interface');
+      }
+    } catch (error) {
+      log(`JS Interface text print error: ${error.message}`);
+    }
+  }
+
   function printReceiptJS() {
     const receiptData = document.getElementById('receiptData').value;
     
@@ -261,112 +220,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // AJAX API functions
-  async function checkStatusAJAX() {
-    log('Checking printer status via AJAX...');
+  // PDF functions
+  async function fetchAndConvertPDF() {
+    const pdfUrl = document.getElementById('pdfUrl').value;
+    const pdfStatus = document.getElementById('pdfStatus');
     
+    if (!pdfUrl) {
+      pdfStatus.innerHTML = '<span class="error">Please enter a PDF URL</span>';
+      log('Error: No PDF URL provided');
+      return;
+    }
+
+    log(`Fetching PDF from: ${pdfUrl}`);
+    pdfStatus.innerHTML = '<span>Fetching PDF...</span>';
+
     try {
-      const response = await makeRequest('/status');
-      log(`AJAX Status: ${JSON.stringify(response)}`);
+      const response = await fetch(pdfUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      
+      // Store the base64 data for later use
+      window.currentPDFBase64 = base64;
+      
+      const fileSize = (arrayBuffer.byteLength / 1024).toFixed(2);
+      pdfStatus.innerHTML = `<span class="success">PDF converted to base64 (${fileSize} KB)</span>`;
+      log(`PDF successfully converted to base64 (${fileSize} KB)`);
+      
     } catch (error) {
-      log(`AJAX status check failed: ${error.message}`);
+      pdfStatus.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+      log(`PDF fetch error: ${error.message}`);
     }
   }
 
-  async function connectPrinterAJAX() {
-    log('Connecting to printer via AJAX...');
-    
-    try {
-      const response = await makeRequest('/connect');
-      if (response.data.success) {
-        log('Printer connected via AJAX!');
-      } else {
-        log(`AJAX connection failed: ${response.data.error}`);
-      }
-    } catch (error) {
-      log(`AJAX connection error: ${error.message}`);
+  function printPDFJS() {
+    if (!window.currentPDFBase64) {
+      log('Error: No PDF data available. Please fetch and convert a PDF first.');
+      return;
     }
-  }
 
-  async function disconnectPrinterAJAX() {
-    log('Disconnecting printer via AJAX...');
+    log('Printing PDF via JavaScript Interface...');
     
     try {
-      const response = await makeRequest('/disconnect');
-      if (response.data.success) {
-        log('Printer disconnected via AJAX!');
+      if (window.PrinterManager && window.PrinterManager.printPDF) {
+        window.PrinterManager.printPDF(window.currentPDFBase64);
+        log('PDF sent to JavaScript Interface for printing!');
+      } else if (window.PrinterManager && window.PrinterManager.printBase64PDF) {
+        window.PrinterManager.printBase64PDF(window.currentPDFBase64);
+        log('PDF sent to JavaScript Interface for printing!');
       } else {
-        log(`AJAX disconnection failed: ${response.data.error}`);
+        log('No printPDF or printBase64PDF method available in JavaScript Interface');
       }
     } catch (error) {
-      log(`AJAX disconnection error: ${error.message}`);
-    }
-  }
-
-  async function printReceiptAJAX() {
-    const receiptData = document.getElementById('receiptData').value;
-    
-    log('Printing receipt via AJAX...');
-    
-    try {
-      const response = await makeRequest('/print/receipt', 'POST');
-      if (response.data.success) {
-        log('Receipt printed via AJAX!');
-      } else {
-        log(`AJAX receipt print failed: ${response.data.error}`);
-      }
-    } catch (error) {
-      log(`AJAX receipt error: ${error.message}`);
-    }
-  }
-
-  async function cutPaperAJAX() {
-    log('Cutting paper via AJAX...');
-    
-    try {
-      const response = await makeRequest('/cut', 'POST');
-      if (response.data.success) {
-        log('Paper cut via AJAX!');
-      } else {
-        log(`AJAX cut failed: ${response.data.error}`);
-      }
-    } catch (error) {
-      log(`AJAX cut error: ${error.message}`);
+      log(`JS Interface PDF print error: ${error.message}`);
     }
   }
 
   // Initialize
-  async function initialize() {
+  function initialize() {
     log('Printer Control Panel loading...');
     
-    // Check for JavaScript Interface first
+    // Check for JavaScript Interface
     checkPrinterManager();
-    
-    // Check for AJAX server
-    await checkAJAXServer();
     
     updateStatus();
     log('Initialization complete');
-    
-    // Auto-check status every 10 seconds if AJAX is available
-    if (ajaxAvailable) {
-      setInterval(checkStatusAJAX, 10000);
-    }
   }
 
   // Make functions globally available
   window.checkStatusJS = checkStatusJS;
   window.connectPrinterJS = connectPrinterJS;
   window.disconnectPrinterJS = disconnectPrinterJS;
+  window.printTextJS = printTextJS;
   window.printReceiptJS = printReceiptJS;
   window.cutPaperJS = cutPaperJS;
-  
-  window.checkStatusAJAX = checkStatusAJAX;
-  window.connectPrinterAJAX = connectPrinterAJAX;
-  window.disconnectPrinterAJAX = disconnectPrinterAJAX;
-  window.printReceiptAJAX = printReceiptAJAX;
-  window.cutPaperAJAX = cutPaperAJAX;
-  
+  window.fetchAndConvertPDF = fetchAndConvertPDF;
+  window.printPDFJS = printPDFJS;
   window.clearLog = clearLog;
 
   // Start initialization
