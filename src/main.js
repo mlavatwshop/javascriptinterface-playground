@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Add default file path on load (full URL), stored in /public/ticket.pdf
+  const defaultPdfUrl = `${window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'}ticket.pdf`;
+  document.getElementById('pdfUrl').value = defaultPdfUrl;
+
   // Utility functions
   function log(message) {
     const logElement = document.getElementById('log');
@@ -12,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // PDF printing function
-  async function printPDF() {
+  async function printPDF(source = 'http://localhost:8080') {
     const pdfUrl = document.getElementById('pdfUrl').value;
     const pdfStatus = document.getElementById('pdfStatus');
     
@@ -26,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfStatus.innerHTML = '<span>Sending print request...</span>';
     
     try {
-      const response = await fetch('http://localhost:8080/print', {
+      const response = await fetch(`${source}/print`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -57,5 +61,5 @@ document.addEventListener('DOMContentLoaded', () => {
   window.clearLog = clearLog;
 
   // Initialize
-  log('PDF Printer loaded and ready');
+  log('Website loaded and ready.');
 });

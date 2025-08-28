@@ -25,24 +25,25 @@
   <body id="app" class="container">
     <header>
       <nav>
-        <h1>🖨️ PDF Printer</h1>
+        <h1>Hesperide Printer Playground</h1>
       </nav>
     </header>
 
     <article>
-      <h2>📄 PDF Printing</h2>
+      <h2>PDF Printing</h2>
       <div>
         <label for="pdfUrl">PDF URL:</label>
-        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="http://192.168.142.14/other/androidapp/fac.pdf">
+        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="">
         <div class="button-group">
-          <button class="outline" onclick="printPDF()">Print PDF</button>
+          <button class="" onclick="printPDF()">Print PDF (localhost)</button>
+          <button class="outline" onclick="printPDF('https://print.hesperide.com')">Print PDF (print.hesperide.com)</button>
         </div>
         <div id="pdfStatus" style="margin-top: 10px;"></div>
       </div>
     </article>
 
     <article>
-      <h2>📋 Activity Log</h2>
+      <h2>Log</h2>
       <button class="outline secondary" onclick="clearLog()">Clear Log</button>
       <pre id="log" style="padding: 15px;"></pre>
     </article>
