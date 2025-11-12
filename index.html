@@ -10,6 +10,14 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.lime.min.css"
     >
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"
+    >
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"
+    ></script>
     <style>
       .error {
         color: #dc3545 !important;
@@ -19,6 +27,33 @@
         color: #28a745 !important;
         font-weight: bold;
       }
+      nav ul {
+        list-style: none;
+        display: flex;
+        gap: 1rem;
+        margin: 0;
+        padding: 0;
+      }
+      nav ul li {
+        margin: 0;
+      }
+      nav a {
+        text-decoration: none;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      img-comparison-slider {
+        width: 840px;
+        height: 420px;
+        margin: 0 auto;
+        display: block;
+      }
+      img-comparison-slider img {
+        width: 840px !important;
+        height: 420px !important;
+        object-fit: contain;
+      }
     </style>
     <script type="module" src="/src/main.js"></script>
   </head>
@@ -26,26 +61,76 @@
     <header>
       <nav>
         <h1>Hesperide Printer Playground</h1>
+        <ul>
+          <li><a href="#/" onclick="navigate('/')">PDF Printing</a></li>
+          <li><a href="#/compare" onclick="navigate('/compare')">Image Comparison</a></li>
+        </ul>
       </nav>
     </header>
 
-    <article>
-      <h2>PDF Printing</h2>
-      <div>
-        <label for="pdfUrl">PDF URL:</label>
-        <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="">
-        <div class="button-group">
-          <button class="" onclick="printPDF()">Print PDF (localhost)</button>
-          <button class="outline" onclick="printPDF('https://print.hesperide.com')">Print PDF (print.hesperide.com)</button>
-        </div>
-        <div id="pdfStatus" style="margin-top: 10px;"></div>
-      </div>
-    </article>
+    <div id="router">
+      <!-- PDF Printing Route -->
+      <div id="route-pdf" class="route">
+        <article>
+          <h2>PDF Printing</h2>
+          <div>
+            <label for="pdfUrl">PDF URL:</label>
+            <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="">
+            <div class="button-group">
+              <button class="" onclick="printPDF()">Print PDF (localhost)</button>
+              <button class="outline" onclick="printPDF('https://print.hesperide.com')">Print PDF (print.hesperide.com)</button>
+            </div>
+            <div id="pdfStatus" style="margin-top: 10px;"></div>
+          </div>
+        </article>
 
-    <article>
-      <h2>Log</h2>
-      <button class="outline secondary" onclick="clearLog()">Clear Log</button>
-      <pre id="log" style="padding: 15px;"></pre>
-    </article>
+        <article>
+          <h2>Log</h2>
+          <button class="outline secondary" onclick="clearLog()">Clear Log</button>
+          <pre id="log" style="padding: 15px;"></pre>
+        </article>
+      </div>
+
+      <!-- Image Comparison Route -->
+      <div id="route-compare" class="route" style="display: none;">
+        <article>
+          <h2>Image Comparison</h2>
+          <div>
+            <fieldset>
+              <legend>Select Image Format</legend>
+              <label>
+                <input type="radio" name="imageFormat" value="png" checked>
+                PNG
+              </label>
+              <label>
+                <input type="radio" name="imageFormat" value="webp">
+                WEBP
+              </label>
+            </fieldset>
+            <fieldset style="margin-top: 1rem;">
+              <legend>Select Image to Compare</legend>
+              <label>
+                <input type="radio" name="imageSelect" value="840" checked>
+                840
+              </label>
+              <label>
+                <input type="radio" name="imageSelect" value="1680">
+                1680
+              </label>
+              <label>
+                <input type="radio" name="imageSelect" value="2520">
+                2520
+              </label>
+            </fieldset>
+          </div>
+          <div style="margin-top: 20px;">
+            <img-comparison-slider id="imageComparison">
+              <img slot="first" id="originalImage" alt="Original" />
+              <img slot="second" id="overlayImage" alt="Comparison" />
+            </img-comparison-slider>
+          </div>
+        </article>
+      </div>
+    </div>
   </body>
 </html>

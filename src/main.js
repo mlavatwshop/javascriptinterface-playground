@@ -1,18 +1,28 @@
+import { initImageComparison } from './imageComparison.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   // Add default file path on load (full URL), stored in /public/ticket.pdf
   const defaultPdfUrl = `${window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'}ticket.pdf`;
-  document.getElementById('pdfUrl').value = defaultPdfUrl;
+  const pdfUrlInput = document.getElementById('pdfUrl');
+  if (pdfUrlInput) {
+    pdfUrlInput.value = defaultPdfUrl;
+  }
 
   // Utility functions
   function log(message) {
     const logElement = document.getElementById('log');
-    const timestamp = new Date().toLocaleTimeString();
-    logElement.innerHTML += `[${timestamp}] ${message}\n`;
-    logElement.scrollTop = logElement.scrollHeight;
+    if (logElement) {
+      const timestamp = new Date().toLocaleTimeString();
+      logElement.innerHTML += `[${timestamp}] ${message}\n`;
+      logElement.scrollTop = logElement.scrollHeight;
+    }
   }
 
   function clearLog() {
-    document.getElementById('log').innerHTML = '';
+    const logElement = document.getElementById('log');
+    if (logElement) {
+      logElement.innerHTML = '';
+    }
   }
 
   // PDF printing function
@@ -56,9 +66,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Routing functionality
+  function navigate(path) {
+    // Hide all routes
+    const routes = document.querySelectorAll('.route');
+    routes.forEach(route => {
+      route.style.display = 'none';
+    });
+
+    // Show selected route
+    if (path === '/compare') {
+      const compareRoute = document.getElementById('route-compare');
+      if (compareRoute) {
+        compareRoute.style.display = 'block';
+        // Initialize image comparison when route is shown
+        setTimeout(() => {
+          initImageComparison();
+        }, 100);
+      }
+    } else {
+      const pdfRoute = document.getElementById('route-pdf');
+      if (pdfRoute) {
+        pdfRoute.style.display = 'block';
+      }
+    }
+
+    // Update URL hash
+    window.location.hash = path;
+  }
+
+  // Handle initial route
+  function handleRoute() {
+    const hash = window.location.hash || '#/';
+    const path = hash.substring(1) || '/';
+    navigate(path);
+  }
+
+  // Listen for hash changes
+  window.addEventListener('hashchange', handleRoute);
+
   // Make functions globally available
   window.printPDF = printPDF;
   window.clearLog = clearLog;
+  window.navigate = navigate;
+
+  // Initialize routing
+  handleRoute();
 
   // Initialize
   log('Website loaded and ready.');
