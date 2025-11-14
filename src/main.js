@@ -1,4 +1,4 @@
-import { initImageComparison } from './imageComparison.js';
+import { initImageComparison, initTreesComparison } from './imageComparison.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Add default file path on load (full URL), stored in /public/ticket.pdf
@@ -82,6 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize image comparison when route is shown
         setTimeout(() => {
           initImageComparison();
+        }, 100);
+      }
+    } else if (path === '/trees') {
+      const treesRoute = document.getElementById('route-trees');
+      if (treesRoute) {
+        treesRoute.style.display = 'block';
+        // Initialize trees comparison when route is shown
+        setTimeout(() => {
+          initTreesComparison();
         }, 100);
       }
     } else {

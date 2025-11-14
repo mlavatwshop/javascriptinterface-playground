@@ -54,6 +54,14 @@
         height: 420px !important;
         object-fit: contain;
       }
+      #treesImageComparison {
+        width: 1000px;
+        height: 666px;
+      }
+      #treesImageComparison img {
+        width: 1000px !important;
+        height: 666px !important;
+      }
     </style>
     <script type="module" src="/src/main.js"></script>
   </head>
@@ -64,6 +72,7 @@
         <ul>
           <li><a href="#/" onclick="navigate('/')">PDF Printing</a></li>
           <li><a href="#/compare" onclick="navigate('/compare')">Image Comparison</a></li>
+          <li><a href="#/trees" onclick="navigate('/trees')">Trees Comparison</a></li>
         </ul>
       </nav>
     </header>
@@ -78,7 +87,6 @@
             <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="">
             <div class="button-group">
               <button class="" onclick="printPDF()">Print PDF (localhost)</button>
-              <button class="outline" onclick="printPDF('https://print.hesperide.com')">Print PDF (print.hesperide.com)</button>
             </div>
             <div id="pdfStatus" style="margin-top: 10px;"></div>
           </div>
@@ -127,6 +135,51 @@
             <img-comparison-slider id="imageComparison">
               <img slot="first" id="originalImage" alt="Original" />
               <img slot="second" id="overlayImage" alt="Comparison" />
+            </img-comparison-slider>
+          </div>
+        </article>
+      </div>
+
+      <!-- Trees Comparison Route -->
+      <div id="route-trees" class="route" style="display: none;">
+        <article>
+          <h2>Trees Comparison</h2>
+          <div>
+            <fieldset>
+              <legend>Select Image Format</legend>
+              <label>
+                <input type="radio" name="treesImageFormat" value="jpg" checked>
+                JPG
+              </label>
+              <label>
+                <input type="radio" name="treesImageFormat" value="webp">
+                WEBP
+              </label>
+            </fieldset>
+            <fieldset style="margin-top: 1rem;">
+              <legend>Select Image to Compare</legend>
+              <label>
+                <input type="radio" name="treesImageSelect" value="1000" checked>
+                1000
+              </label>
+              <label>
+                <input type="radio" name="treesImageSelect" value="2000">
+                2000
+              </label>
+              <label>
+                <input type="radio" name="treesImageSelect" value="3000">
+                3000
+              </label>
+              <label>
+                <input type="radio" name="treesImageSelect" value="6000">
+                6000
+              </label>
+            </fieldset>
+          </div>
+          <div style="margin-top: 20px;">
+            <img-comparison-slider id="treesImageComparison">
+              <img slot="first" id="treesOriginalImage" alt="Original" />
+              <img slot="second" id="treesOverlayImage" alt="Comparison" />
             </img-comparison-slider>
           </div>
         </article>
