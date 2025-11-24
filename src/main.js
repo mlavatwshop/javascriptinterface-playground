@@ -1,11 +1,36 @@
 import { initImageComparison, initTreesComparison } from './imageComparison.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Add default file path on load (full URL), stored in /public/ticket.pdf
-  const defaultPdfUrl = `${window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'}ticket.pdf`;
+  // Ticket URLs configuration
+  const baseUrl = window.location.href.endsWith('/') ? window.location.href : window.location.href + '/';
+  const ticketUrls = {
+    default: `${baseUrl}ticket.pdf`,
+    'no-margin': `${baseUrl}ticket-no-margin.pdf`,
+    ticketmaster: 'https://media.ticketmaster.com/img/static/h/ticket-sample.pdf',
+    custom: ''
+  };
+
+  // Initialize PDF URL input
   const pdfUrlInput = document.getElementById('pdfUrl');
-  if (pdfUrlInput) {
-    pdfUrlInput.value = defaultPdfUrl;
+  const ticketSelector = document.getElementById('ticketSelector');
+  
+  // Set default ticket on load
+  if (pdfUrlInput && ticketSelector) {
+    pdfUrlInput.value = ticketUrls.default;
+  }
+
+  // Update PDF URL based on selector
+  function updatePdfUrl() {
+    const selectedTicket = ticketSelector.value;
+    
+    if (selectedTicket === 'custom') {
+      pdfUrlInput.value = '';
+      pdfUrlInput.readOnly = false;
+      pdfUrlInput.focus();
+    } else {
+      pdfUrlInput.value = ticketUrls[selectedTicket];
+      pdfUrlInput.readOnly = true;
+    }
   }
 
   // Utility functions
@@ -118,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.printPDF = printPDF;
   window.clearLog = clearLog;
   window.navigate = navigate;
+  window.updatePdfUrl = updatePdfUrl;
 
   // Initialize routing
   handleRoute();

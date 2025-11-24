@@ -83,8 +83,16 @@
         <article>
           <h2>PDF Printing</h2>
           <div>
-            <label for="pdfUrl">PDF URL:</label>
-            <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="">
+            <label for="ticketSelector">Select Ticket:</label>
+            <select id="ticketSelector" onchange="updatePdfUrl()">
+              <option value="default">Default PDF Ticket</option>
+              <option value="no-margin">No Margin Ticket</option>
+              <option value="ticketmaster">Ticketmaster Sample</option>
+              <option value="custom">Custom URL</option>
+            </select>
+            
+            <label for="pdfUrl" style="margin-top: 1rem;">PDF URL:</label>
+            <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="" readonly>
             <div class="button-group">
               <button class="" onclick="printPDF()">Print PDF (localhost)</button>
             </div>
