@@ -4,20 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PDF Printer</title>
-    <meta name="description" content="A simple tool to print PDFs">
+    <title>Imprimante PDF</title>
+    <meta name="description" content="Un outil simple pour imprimer des PDF">
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.lime.min.css"
     >
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"
-    >
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"
-    ></script>
     <style>
       .error {
         color: #dc3545 !important;
@@ -27,169 +19,49 @@
         color: #28a745 !important;
         font-weight: bold;
       }
-      nav ul {
-        list-style: none;
-        display: flex;
-        gap: 1rem;
-        margin: 0;
-        padding: 0;
-      }
-      nav ul li {
-        margin: 0;
-      }
-      nav a {
-        text-decoration: none;
-      }
-      nav a:hover {
-        text-decoration: underline;
-      }
-      img-comparison-slider {
-        width: 840px;
-        height: 420px;
-        margin: 0 auto;
-        display: block;
-      }
-      img-comparison-slider img {
-        width: 840px !important;
-        height: 420px !important;
-        object-fit: contain;
-      }
-      #treesImageComparison {
-        width: 1000px;
-        height: 666px;
-      }
-      #treesImageComparison img {
-        width: 1000px !important;
-        height: 666px !important;
-      }
+
     </style>
     <script type="module" src="/src/main.js"></script>
   </head>
   <body id="app" class="container">
     <header>
-      <nav>
-        <h1>Hesperide Printer Playground</h1>
-        <ul>
-          <li><a href="#/" onclick="navigate('/')">PDF Printing</a></li>
-          <li><a href="#/compare" onclick="navigate('/compare')">Image Comparison</a></li>
-          <li><a href="#/trees" onclick="navigate('/trees')">Trees Comparison</a></li>
-        </ul>
-      </nav>
+      <h1>Playground Imprimante Hesperide</h1>
     </header>
 
     <div id="router">
-      <!-- PDF Printing Route -->
-      <div id="route-pdf" class="route">
+      <div>
         <article>
-          <h2>PDF Printing</h2>
+          <h2>Impression PDF</h2>
           <div>
-            <label for="ticketSelector">Select Ticket:</label>
-            <select id="ticketSelector" onchange="updatePdfUrl()">
-              <option value="default">Default PDF Ticket</option>
-              <option value="no-margin">No Margin Ticket</option>
-              <option value="ticketmaster">Ticketmaster Sample</option>
-              <option value="custom">Custom URL</option>
-            </select>
+            <fieldset>
+              <legend>Sélectionner un billet :</legend>
+              <label>
+                <input type="radio" name="ticketSelect" value="default" checked onchange="updatePdfUrl()">
+                Billet PDF par défaut
+              </label>
+              <label>
+                <input type="radio" name="ticketSelect" value="no-margin" onchange="updatePdfUrl()">
+                Billet sans marge
+              </label>
+              <label>
+                <input type="radio" name="ticketSelect" value="custom" onchange="updatePdfUrl()">
+                URL personnalisée
+              </label>
+            </fieldset>
             
-            <label for="pdfUrl" style="margin-top: 1rem;">PDF URL:</label>
-            <input type="url" id="pdfUrl" placeholder="Enter URL to PDF file..." value="" readonly>
-            <div class="button-group">
-              <button class="" onclick="printPDF()">Print PDF (localhost)</button>
+            <label for="pdfUrl" style="margin-top: 1rem;">URL du PDF :</label>
+            <input type="url" id="pdfUrl" placeholder="Entrez l'URL du fichier PDF..." value="" readonly>
+            <div>
+              <button onclick="printPDF()">Imprimer le PDF</button>
             </div>
             <div id="pdfStatus" style="margin-top: 10px;"></div>
           </div>
         </article>
 
         <article>
-          <h2>Log</h2>
-          <button class="outline secondary" onclick="clearLog()">Clear Log</button>
+          <h2>Journal</h2>
+          <button class="outline secondary" onclick="clearLog()">Effacer le journal</button>
           <pre id="log" style="padding: 15px;"></pre>
-        </article>
-      </div>
-
-      <!-- Image Comparison Route -->
-      <div id="route-compare" class="route" style="display: none;">
-        <article>
-          <h2>Image Comparison</h2>
-          <div>
-            <fieldset>
-              <legend>Select Image Format</legend>
-              <label>
-                <input type="radio" name="imageFormat" value="png" checked>
-                PNG
-              </label>
-              <label>
-                <input type="radio" name="imageFormat" value="webp">
-                WEBP
-              </label>
-            </fieldset>
-            <fieldset style="margin-top: 1rem;">
-              <legend>Select Image to Compare</legend>
-              <label>
-                <input type="radio" name="imageSelect" value="840" checked>
-                840
-              </label>
-              <label>
-                <input type="radio" name="imageSelect" value="1680">
-                1680
-              </label>
-              <label>
-                <input type="radio" name="imageSelect" value="2520">
-                2520
-              </label>
-            </fieldset>
-          </div>
-          <div style="margin-top: 20px;">
-            <img-comparison-slider id="imageComparison">
-              <img slot="first" id="originalImage" alt="Original" />
-              <img slot="second" id="overlayImage" alt="Comparison" />
-            </img-comparison-slider>
-          </div>
-        </article>
-      </div>
-
-      <!-- Trees Comparison Route -->
-      <div id="route-trees" class="route" style="display: none;">
-        <article>
-          <h2>Trees Comparison</h2>
-          <div>
-            <fieldset>
-              <legend>Select Image Format</legend>
-              <label>
-                <input type="radio" name="treesImageFormat" value="jpg" checked>
-                JPG
-              </label>
-              <label>
-                <input type="radio" name="treesImageFormat" value="webp">
-                WEBP
-              </label>
-            </fieldset>
-            <fieldset style="margin-top: 1rem;">
-              <legend>Select Image to Compare</legend>
-              <label>
-                <input type="radio" name="treesImageSelect" value="1000" checked>
-                1000
-              </label>
-              <label>
-                <input type="radio" name="treesImageSelect" value="2000">
-                2000
-              </label>
-              <label>
-                <input type="radio" name="treesImageSelect" value="3000">
-                3000
-              </label>
-              <label>
-                <input type="radio" name="treesImageSelect" value="6000">
-                6000
-              </label>
-            </fieldset>
-          </div>
-          <div style="margin-top: 20px;">
-            <img-comparison-slider id="treesImageComparison">
-              <img slot="first" id="treesOriginalImage" alt="Original" />
-              <img slot="second" id="treesOverlayImage" alt="Comparison" />
-            </img-comparison-slider>
-          </div>
         </article>
       </div>
     </div>

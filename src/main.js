@@ -1,27 +1,26 @@
-import { initImageComparison, initTreesComparison } from './imageComparison.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   // Ticket URLs configuration
   const baseUrl = window.location.href.endsWith('/') ? window.location.href : window.location.href + '/';
   const ticketUrls = {
     default: `${baseUrl}ticket.pdf`,
-    'no-margin': `${baseUrl}ticket-no-margin.pdf`,
-    ticketmaster: 'https://media.ticketmaster.com/img/static/h/ticket-sample.pdf',
+    'no-margin': `${baseUrl}ticket_alt.pdf`,
     custom: ''
   };
 
   // Initialize PDF URL input
   const pdfUrlInput = document.getElementById('pdfUrl');
-  const ticketSelector = document.getElementById('ticketSelector');
   
   // Set default ticket on load
-  if (pdfUrlInput && ticketSelector) {
+  if (pdfUrlInput) {
     pdfUrlInput.value = ticketUrls.default;
   }
 
-  // Update PDF URL based on selector
+  // Update PDF URL based on radio button selection
   function updatePdfUrl() {
-    const selectedTicket = ticketSelector.value;
+    const selectedRadio = document.querySelector('input[name="ticketSelect"]:checked');
+    if (!selectedRadio) return;
+    
+    const selectedTicket = selectedRadio.value;
     
     if (selectedTicket === 'custom') {
       pdfUrlInput.value = '';
@@ -56,13 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfStatus = document.getElementById('pdfStatus');
     
     if (!pdfUrl) {
-      pdfStatus.innerHTML = '<span class="error">Please enter a PDF URL</span>';
-      log('Error: No PDF URL provided');
+      pdfStatus.innerHTML = '<span class="error">Veuillez entrer une URL de PDF</span>';
+      log('Erreur : Aucune URL de PDF fournie');
       return;
     }
 
-    log(`Sending PDF print request: ${pdfUrl}`);
-    pdfStatus.innerHTML = '<span>Sending print request...</span>';
+    log(`Envoi de la demande d\'impression PDF : ${pdfUrl}`);
+    pdfStatus.innerHTML = '<span>Envoi de la demande d\'impression...</span>';
     
     try {
       const response = await fetch(`${source}/print`, {
@@ -78,76 +77,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const result = await response.json();
-      pdfStatus.innerHTML = '<span class="success">PDF print request sent successfully</span>';
-      log('PDF print request sent successfully');
+      pdfStatus.innerHTML = '<span class="success">Demande d\'impression PDF envoyée avec succès</span>';
+      log('Demande d\'impression PDF envoyée avec succès');
       
       if (result.message) {
-        log(`Server response: ${result.message}`);
+        log(`Réponse du serveur : ${result.message}`);
       }
       
     } catch (error) {
-      pdfStatus.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-      log(`PDF print error: ${error.message}`);
+      pdfStatus.innerHTML = `<span class="error">Erreur : ${error.message}</span>`;
+      log(`Erreur d\'impression PDF : ${error.message}`);
     }
   }
-
-  // Routing functionality
-  function navigate(path) {
-    // Hide all routes
-    const routes = document.querySelectorAll('.route');
-    routes.forEach(route => {
-      route.style.display = 'none';
-    });
-
-    // Show selected route
-    if (path === '/compare') {
-      const compareRoute = document.getElementById('route-compare');
-      if (compareRoute) {
-        compareRoute.style.display = 'block';
-        // Initialize image comparison when route is shown
-        setTimeout(() => {
-          initImageComparison();
-        }, 100);
-      }
-    } else if (path === '/trees') {
-      const treesRoute = document.getElementById('route-trees');
-      if (treesRoute) {
-        treesRoute.style.display = 'block';
-        // Initialize trees comparison when route is shown
-        setTimeout(() => {
-          initTreesComparison();
-        }, 100);
-      }
-    } else {
-      const pdfRoute = document.getElementById('route-pdf');
-      if (pdfRoute) {
-        pdfRoute.style.display = 'block';
-      }
-    }
-
-    // Update URL hash
-    window.location.hash = path;
-  }
-
-  // Handle initial route
-  function handleRoute() {
-    const hash = window.location.hash || '#/';
-    const path = hash.substring(1) || '/';
-    navigate(path);
-  }
-
-  // Listen for hash changes
-  window.addEventListener('hashchange', handleRoute);
 
   // Make functions globally available
   window.printPDF = printPDF;
   window.clearLog = clearLog;
-  window.navigate = navigate;
   window.updatePdfUrl = updatePdfUrl;
 
-  // Initialize routing
-  handleRoute();
-
   // Initialize
-  log('Website loaded and ready.');
+  log('Site web chargé et prêt.');
 });
